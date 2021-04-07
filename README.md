@@ -1,3 +1,3 @@
-<img align="right" height="100" src="http://todepond.com/IMG/Plane.png">
+<img align="right" height="100" src="http://todepond.com/IMG/PlaneFlip.png">
 
 # MapPond
