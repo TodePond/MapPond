@@ -89,27 +89,70 @@ on.mousewheel((e) => {
 	camera.x += zoom
 	camera.y += zoom
 	if (camera.scale < 0) camera.scale = 0
+	updateHovers()
 })
 
 on.mousemove(e => {
+	updateHovers()
 	if (Mouse.Middle) {
 		const {movementX, movementY} = e
 		camera.x -= movementX / camera.scale
 		camera.y -= movementY / camera.scale
+		return
 	}
+
+
 })
+
+const updateHovers = () => {
+	const [mx, my] = Mouse.position
+	for (const entity of entities.values()) {
+		const space = getSpace(entity)
+		const isCollision = isSpaceCollision([mx, my], space)
+		entity.hover = isCollision
+	}
+}
+
+const isSpaceCollision = ([px, py], {x, y, width, height}) => {
+	if (px < x) return false
+	if (py < y) return false
+	if (px > x + width) return false
+	if (py > y + height) return false
+	return true
+}
+
+const getSpace = (entity) => {
+	const image = entity.image
+	const width = entity.scale * image.width * camera.scale
+	const height = entity.scale * image.height * camera.scale
+	const x = canvas.width/2 + (entity.x - camera.x - (image.width * entity.scale)/2) * camera.scale
+	const y = canvas.height/2 + (entity.y - camera.y - (image.width * entity.scale)/2) * camera.scale
+	return {width, height, x, y}
+}
 
 stage.draw = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
+
+	// Images
     for (const entity of entities.values()) {
-
-        const image = entity.image
-        const width = entity.scale * image.width * camera.scale
-		const height = entity.scale * image.height * camera.scale
-        const x = canvas.width/2 + (entity.x - camera.x - (image.width * entity.scale)/2) * camera.scale
-		const y = canvas.height/2 + (entity.y - camera.y - (image.width * entity.scale)/2) * camera.scale
-
+		const {image} = entity
+        const {width, height, x, y} = getSpace(entity)
         context.drawImage(image, x, y, width, height)
+		if (entity.hover) {
+			context.strokeStyle = "rgb(0, 128, 255)"
+			context.strokeRect(x, y, width, height)
+		}
+    }
+
+	// Hovers
+	context.strokeStyle = "rgb(0, 128, 255)"
+	context.lineWidth = 10 * camera.scale
+	context.lineJoin = "round"
+	for (const entity of entities.values()) {
+        const {width, height, x, y} = getSpace(entity)
+		if (entity.hover) {
+			context.strokeRect(x, y, width, height)
+		}
     }
 }
 
