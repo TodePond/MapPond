@@ -8,7 +8,6 @@ const freeIds = new Set()
 
 const selectedEntities = new Set()
 const selectionBoxStart = [undefined, undefined]
-let pressedEntity = undefined
 
 const imageCache = new Map()
 
@@ -109,7 +108,8 @@ on.mousewheel((e) => {
 	camera.y += zoom
 	if (camera.scale < 0) camera.scale = 0
 	updateHovers()
-})
+	e.preventDefault()
+}, {passive: false})
 
 on.mousemove(e => {
 	updateHovers()
@@ -141,14 +141,21 @@ on.mouseup(e => {
 		const [mx, my] = Mouse.position
 		const [sx, sy] = selectionBoxStart
 		if (sx !== undefined || sy !== undefined) {
-			const hits = getSelects([sx, sy], [mx, my])
+			let hits
+			if (sx === mx && sy === my) {
+				hits = new Set([getHit(mx, my)])
+			}
+			else {
+				hits = getSelects([sx, sy], [mx, my])
+			}
 			
 			if (!e.shiftKey && !e.ctrlKey) {
 				selectedEntities.clear()
 			}
 
 			for (const hit of hits.values()) {
-				selectedEntities.add(hit.d)
+				print("Entity:", hit)
+				selectedEntities.add(hit)
 			}
 			
 			selectionBoxStart[0] = undefined
@@ -225,6 +232,10 @@ const getSelects = ([sx, sy], [mx, my]) => {
 	for (const entity of entities.values()) {
 		const space = getEntitySpace(entity)
 		if (isSpaceCollision([mx, my], space)) {
+			hits.add(entity)
+			continue
+		}
+		if (isSpaceCollision([sx, sy], space)) {
 			hits.add(entity)
 			continue
 		}
