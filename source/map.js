@@ -101,14 +101,26 @@ on.resize(() => {
 })
 
 on.mousewheel((e) => {
+	e.preventDefault()
     const {deltaY} = e
+
+	if (e.altKey) {
+		for (const entity of selectedEntities) {
+			const zoom = (-deltaY / 100) * (entity.scale - entity.scale * (1 - 0.05))
+			entity.scale += zoom
+			if (entity.scale < 0) entity.scale = 0
+		}
+		updateHovers()
+		return
+	}
+
 	const zoom = (-deltaY / 100) * (camera.scale - camera.scale * (1 - 0.05))
     camera.scale += zoom
 	camera.x += zoom
 	camera.y += zoom
 	if (camera.scale < 0) camera.scale = 0
 	updateHovers()
-	e.preventDefault()
+	
 }, {passive: false})
 
 on.mousemove(e => {
@@ -143,7 +155,9 @@ on.mouseup(e => {
 		if (sx !== undefined || sy !== undefined) {
 			let hits
 			if (sx === mx && sy === my) {
-				hits = new Set([getHit(mx, my)])
+				const hit = getHit(mx, my)
+				if (hit !== undefined) hits = new Set([hit])
+				else hits = new Set()
 			}
 			else {
 				hits = getSelects([sx, sy], [mx, my])
