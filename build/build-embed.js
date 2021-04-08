@@ -1,3 +1,5 @@
+const SAVE = "camera:x=11611.593555016441,y=-1182.1625414685498,scale=0.06771486097244148;entities:;id=0,source=Plane.png,x=-510.3364117639188,y=-224.72212767210863,z=0,scale=0.5133420832795047,rotation=-2.0870278483732587;id=1,source=Dot.png,x=-529.2993969266645,y=-109.95942763940137,z=-1,scale=0.23723231804219377,rotation=0;id=2,source=Dot.png,x=1442.6432436836888,y=280.579587217662,z=-1,scale=0.23723231804219377,rotation=0;id=3,source=Dot.png,x=2644.0803964236784,y=1594.6545438547314,z=-1,scale=0.23723231804219377,rotation=0;id=4,source=Dot.png,x=4459.891735433153,y=2681.525538474599,z=-1,scale=0.23723231804219377,rotation=0;id=5,source=Dot.png,x=6848.92016602977,y=1862.004351263705,z=-1,scale=0.23723231804219377,rotation=0;id=6,source=Dot.png,x=7489.63673057647,y=-556.824849776942,z=-1,scale=0.23723231804219377,rotation=0;id=7,source=Dot.png,x=10395.211848869647,y=2368.6174488122565,z=-1,scale=0.23723231804219377,rotation=0;id=8,source=Dot.png,x=12684.904377986157,y=-298.5515059286588,z=-1,scale=0.23723231804219377,rotation=0;id=9,source=Dot.png,x=16777.94821594195,y=-1467.3759915140135,z=-1,scale=0.23723231804219377,rotation=0;id=10,source=Dot.png,x=20865.150683998152,y=-95.73855308158772,z=-1,scale=0.23723231804219377,rotation=0;id=11,source=Dot.png,x=24328.88158913055,y=-1148.7127482418337,z=-1,scale=0.23723231804219377,rotation=0"
+
 const stage = Stage.make()
 const {canvas, context} = stage
 
@@ -46,6 +48,20 @@ const loadEntity = (entity, id) => {
 	layer.set(id, entity)
 }
 
+const moveLayer = (entity, dz) => {
+	const z = entity.z
+	const layer = layers.get(z)
+	const id = entity.id
+	layer.delete(id)
+	const nz = z + dz
+	if (layers.get(nz) === undefined) {
+		layers.set(nz, new Map())
+	}
+	const newLayer = layers.get(nz)
+	newLayer.set(id, entity)
+	entity.z = nz
+}
+
 // Remove an entity from the map
 const unregisterEntity = (entity) => {
 	const {id} = entity
@@ -88,10 +104,7 @@ on.load(() => {
     document.body.style["margin"] = "0"
     canvas.style["background-color"] = "rgb(45, 56, 77)"
     trigger("resize")
-
-    createEntity("Plane.png", {scale: 0.5}).d
-	createEntity("Plane.png", {x: 200, scale: 0.5, z: -1}).d
-    createEntity("Plane.png", {x: 200, y: 200, scale: 0.5, rotation: 45}).d
+    load(SAVE)
     
 })
 
@@ -108,11 +121,30 @@ on.keydown(e => {
 		}
 		return
 	}
+	if (e.key === "p") {
+		for (const entity of selectedEntities.values()) {
+			print("Entity:", entity)
+		}
+		return
+	}
+	if (e.key === "=") {
+		for (const entity of selectedEntities.values()) {
+			moveLayer(entity, 1)
+		}
+		return
+	}
+	if (e.key === "-") {
+		for (const entity of selectedEntities.values()) {
+			moveLayer(entity, -1)
+		}
+		return
+	}
 	if (e.ctrlKey) {
 		if (e.key === "c") {
 			clipboard = []
-			for (const entity of selectedEntities.values())
-			clipboard.push({...entity})
+			for (const entity of selectedEntities.values()) {
+				clipboard.push({...entity})
+			}
 			return
 		}
 		if (e.key === "v") {
@@ -121,6 +153,7 @@ on.keydown(e => {
 				const paste = createEntity(entity.source, {...entity})
 				selectedEntities.add(paste)
 			}
+			return
 		}
 	}
 })
@@ -207,7 +240,6 @@ on.mouseup(e => {
 			}
 
 			for (const hit of hits.values()) {
-				print("Entity:", hit)
 				selectedEntities.add(hit)
 			}
 			
@@ -444,11 +476,11 @@ const save = () => {
     for (const entity of entities.values()) {
         lines.push(`id=${entity.id},source=${entity.source},x=${entity.x},y=${entity.y},z=${entity.z},scale=${entity.scale},rotation=${entity.rotation}`)
     }
-    return lines.join(`\n`)
+    return lines.join(`;`)
 }
 
 const Load = MotherTode(`
-	:: Camera "\n" Entities EOF
+	:: Camera ";" Entities EOF
 	Camera (
 		:: "camera:x=" Number ",y=" Number ",scale=" Number
 		>> ([c, x, _1, y, _2, scale]) => {
@@ -459,7 +491,7 @@ const Load = MotherTode(`
 	)
 	Entities :: "entities:" { Entity }
 	Entity (
-		:: "\nid=" Number ",source=" String ",x=" Number ",y=" Number ",z=" Number ",scale=" Number ",rotation=" Number
+		:: ";id=" Number ",source=" String ",x=" Number ",y=" Number ",z=" Number ",scale=" Number ",rotation=" Number
 		?? ([_1, id, _2, source, _3, x, _4, y, _5, z, _6, scale, _7, rotation]) => {
 			const entity = makeEntity(source.output, {x: x.output, y: y.output, z: z.output, scale: scale.output, rotation: rotation.output})
 			loadEntity(entity, id.output)
@@ -474,5 +506,7 @@ const Load = MotherTode(`
 const load = (save) => {
 	MotherTode.Term.resetCache()
 	unregisterAllEntities()
-	return Load(save)
+	const result = Load(save)
+	if (!result.success) result.smartLog()
+	return result
 }
