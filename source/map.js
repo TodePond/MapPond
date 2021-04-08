@@ -8,6 +8,7 @@ const freeIds = new Set()
 
 const selectedEntities = new Set()
 const selectionBoxStart = [undefined, undefined]
+let pressedEntity = undefined
 
 const imageCache = new Map()
 
@@ -129,38 +130,17 @@ on.mousemove(e => {
 on.mousedown(e => {
 	if (e.button === 0) {
 		const [mx, my] = Mouse.position
-		const hit = getHit(mx, my)
-		if (hit === undefined) {
-			selectionBoxStart[0] = mx
-			selectionBoxStart[1] = my
-			return
-		}
-
-		print("Entity:", hit)
-
-		if (!selectedEntities.has(hit)) {
-			if (!e.shiftKey && !e.ctrlKey) {
-				selectedEntities.clear()
-			}
-			selectedEntities.add(hit)
-		}
-		else {
-			if (selectedEntities.size === 1 || e.shiftKey || e.ctrlKey) {
-				selectedEntities.delete(hit)
-			}
-			else {
-				selectedEntities.clear()
-				selectedEntities.add(hit)
-			}
-		}
+		selectionBoxStart[0] = mx
+		selectionBoxStart[1] = my
+		
 	}
 })
 
 on.mouseup(e => {
 	if (e.button === 0) {
+		const [mx, my] = Mouse.position
 		const [sx, sy] = selectionBoxStart
 		if (sx !== undefined || sy !== undefined) {
-			const [mx, my] = Mouse.position
 			const hits = getSelects([sx, sy], [mx, my])
 			
 			if (!e.shiftKey && !e.ctrlKey) {
@@ -245,6 +225,10 @@ const getSelects = ([sx, sy], [mx, my]) => {
 	for (const entity of entities.values()) {
 		const space = getEntitySpace(entity)
 		if (isSpaceCollision([mx, my], space)) {
+			hits.add(entity)
+			continue
+		}
+		if (isSpaceCollision(space.center, selection)) {
 			hits.add(entity)
 			continue
 		}
