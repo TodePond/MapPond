@@ -132,6 +132,20 @@ on.mousemove(e => {
 	}
 	else if (Mouse.Right) {
 		const {movementX, movementY} = e
+
+		if (e.altKey) {
+			const [mx, my] = Mouse.position
+			for (const entity of selectedEntities) {
+				const space = getEntitySpace(entity)
+				const [cx, cy] = space.center
+				const [dx, dy] = [cx - mx, cy - my]
+				entity.rotation += (movementY * -dx) / 2000
+				entity.rotation += (movementX * dy) / 2000
+			}
+			updateHovers()
+			return
+		}
+
 		for (const entity of selectedEntities.values()) {
 			entity.x += movementX / camera.scale
 			entity.y += movementY / camera.scale
