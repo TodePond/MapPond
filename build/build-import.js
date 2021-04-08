@@ -70,9 +70,9 @@ on.load(() => {
     canvas.style["background-color"] = "rgb(45, 56, 77)"
     trigger("resize")
 
-    const plane = createEntity("Plane.png", {x: 100, scale: 0.5}).d
-    
-    const plane2 = createEntity("Plane.png", {x: 50}).d
+    createEntity("Plane.png", {scale: 0.5}).d
+    createEntity("Plane.png", {x: 200, y: 200, scale: 0.5}).d
+	createEntity("Plane.png", {x: 200, scale: 0.5}).d
     
 })
 
@@ -83,23 +83,33 @@ on.resize(() => {
 
 on.mousewheel((e) => {
     const {deltaY} = e
-    camera.scale += deltaY / 100 * 0.05
+	const zoom = (-deltaY / 100) * (camera.scale - camera.scale * (1 - 0.05))
+    camera.scale += zoom
+	const [mx, my] = Mouse.position
+	camera.x += zoom
+	camera.y += zoom
+	if (camera.scale < 0) camera.scale = 0
+})
+
+on.mousemove(e => {
+	if (Mouse.Middle) {
+		const {movementX, movementY} = e
+		camera.x -= movementX / camera.scale
+		camera.y -= movementY / camera.scale
+	}
 })
 
 stage.draw = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
     for (const entity of entities.values()) {
-        const screen = {
-            x: entity.x - camera.x,
-            y: entity.y - camera.y,
-            scale: entity.scale * camera.scale,
-        }
-        
-        const {x, y} = screen
-        const {image} = entity
-        const [width, height] = [screen.scale * image.width, screen.scale * image.height]
 
-        context.drawImage(image, screen.x, screen.y, width, height)
+        const image = entity.image
+        const width = entity.scale * image.width * camera.scale
+		const height = entity.scale * image.height * camera.scale
+        const x = canvas.width/2 + (entity.x - camera.x - (image.width * entity.scale)/2) * camera.scale
+		const y = canvas.height/2 + (entity.y - camera.y - (image.width * entity.scale)/2) * camera.scale
+
+        context.drawImage(image, x, y, width, height)
     }
 }
 
