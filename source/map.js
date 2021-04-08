@@ -63,9 +63,9 @@ const unregisterAllEntities = () => {
 }
 
 // Make an entity object
-const makeEntity = (source, {x = 0, y = 0, z = 0, scale = 1} = {}) => {
+const makeEntity = (source, {x = 0, y = 0, z = 0, scale = 1, rotation = 0} = {}) => {
     const image = getImage(source)
-    const entity = {id: undefined, source, image, x, y, z, scale}
+    const entity = {id: undefined, source, image, x, y, z, scale, rotation}
     return entity
 }
 
@@ -86,8 +86,8 @@ on.load(() => {
     trigger("resize")
 
     createEntity("Plane.png", {scale: 0.5}).d
-    createEntity("Plane.png", {x: 200, y: 200, scale: 0.5}).d
 	createEntity("Plane.png", {x: 200, scale: 0.5, z: -1}).d
+    createEntity("Plane.png", {x: 200, y: 200, scale: 0.5, rotation: 45}).d
     
 })
 
@@ -100,7 +100,6 @@ on.mousewheel((e) => {
     const {deltaY} = e
 	const zoom = (-deltaY / 100) * (camera.scale - camera.scale * (1 - 0.05))
     camera.scale += zoom
-	const [mx, my] = Mouse.position
 	camera.x += zoom
 	camera.y += zoom
 	if (camera.scale < 0) camera.scale = 0
@@ -119,7 +118,8 @@ on.mousemove(e => {
 
 on.mousedown(e => {
 	if (e.button === 0) {
-
+		const [mx, my] = Mouse.position
+		const hit = getHit(mx, my).d
 	}
 })
 
@@ -140,7 +140,10 @@ const getHit = (x, y) => {
 }
 
 const findTopHit = (hits) => {
-	return [...hits.values()].reduce((a, b) => a.z > b.z? a : b, {z: -Infinity})
+	const dummy = {z: -Infinity}
+	const hit = [...hits.values()].reduce((a, b) => a.z > b.z? a : b, dummy)
+	if (dummy === hit) return undefined
+	return hit
 }
 
 const updateHovers = () => {
@@ -177,7 +180,8 @@ const getSpace = (entity) => {
 	const height = entity.scale * image.height * camera.scale
 	const x = canvas.width/2 + (entity.x - camera.x - (image.width * entity.scale)/2) * camera.scale
 	const y = canvas.height/2 + (entity.y - camera.y - (image.width * entity.scale)/2) * camera.scale
-	return {width, height, x, y}
+	const rotation = entity.rotation * Math.PI / 180
+	return {width, height, x, y, rotation}
 }
 
 stage.draw = () => {
@@ -189,23 +193,42 @@ stage.draw = () => {
 		const layer = layers.get(z)
 		for (const entity of layer.values()) {
 			const {image} = entity
-			const {width, height, x, y} = getSpace(entity)
-			context.drawImage(image, x, y, width, height)
+			const {width, height, x, y, rotation} = getSpace(entity)
+			
+			const [cx, cy] = [x + width/2, y + height/2]
+			const [ox, oy] = [-width/2, -height/2]
+
+			context.translate(cx, cy)
+			context.rotate(rotation)
+			context.drawImage(image, ox, oy, width, height)
+			context.rotate(-rotation)
+			context.translate(-(cx), -(cy))
 		}
 	}
 
 	// Hovers
 	context.lineWidth = 5 * camera.scale
 	for (const entity of entities.values()) {
-        const {width, height, x, y} = getSpace(entity)
+        const {width, height, x, y, rotation} = getSpace(entity)
+		
+		const [cx, cy] = [x + width/2, y + height/2]
+		const [ox, oy] = [-width/2, -height/2]
+
+		context.translate(cx, cy)
+		context.rotate(rotation)
+		
 		if (entity.highlight) {
 			context.fillStyle = "rgba(0, 128, 255, 25%)"
-			context.fillRect(x, y, width, height)
+			context.fillRect(ox, oy, width, height)
 		}
 		if (entity.hover) {
 			context.strokeStyle = "rgba(0, 128, 255)"
-			context.strokeRect(x, y, width, height)
+			context.strokeRect(ox, oy, width, height)
 		}
+
+		context.rotate(-rotation)
+		context.translate(-(cx), -(cy))
+
     }
 }
 
@@ -215,13 +238,13 @@ const save = () => {
     lines.push(`camera:x=${camera.x},y=${camera.y},scale=${camera.scale}`)
     lines.push(`entities:`)
     for (const entity of entities.values()) {
-        lines.push(`id=${entity.id},source=${entity.source},x=${entity.x},y=${entity.y},z=${entity.z},scale=${entity.scale}`)
+        lines.push(`id=${entity.id},source=${entity.source},x=${entity.x},y=${entity.y},z=${entity.z},scale=${entity.scale},rotation=${entity.rotation}`)
     }
     return lines.join(`\n`)
 }
 
 const Load = MotherTode(`
-	:: Camera "\n" Entities
+	:: Camera "\n" Entities EOF
 	Camera (
 		:: "camera:x=" Number ",y=" Number ",scale=" Number
 		>> ([c, x, _1, y, _2, scale]) => {
@@ -232,14 +255,15 @@ const Load = MotherTode(`
 	)
 	Entities :: "entities:" { Entity }
 	Entity (
-		:: "\nid=" Number ",source=" String ",x=" Number ",y=" Number ",z=" Number ",scale=" Number
-		>> ([_1, id, _2, source, _3, x, _4, y, _5, z, _6, scale]) => {
-			const entity = makeEntity(source.output, {x: x.output, y: y.output, z: z.output, scale: scale.output})
+		:: "\nid=" Number ",source=" String ",x=" Number ",y=" Number ",z=" Number ",scale=" Number ",rotation=" Number
+		?? ([_1, id, _2, source, _3, x, _4, y, _5, z, _6, scale, _7, rotation]) => {
+			const entity = makeEntity(source.output, {x: x.output, y: y.output, z: z.output, scale: scale.output, rotation: rotation.output})
 			loadEntity(entity, id.output)
+			return true
 		}
 	)
 	String :: /[^,]/+
-	Number :: /[0-9.]/+ >> (n) => n.output.as(Number)
+	Number :: "-"? /[0-9.]/+ >> (n) => n.output.as(Number)
 `)
 
 // Load a map state
