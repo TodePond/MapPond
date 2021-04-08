@@ -6,6 +6,9 @@ const entities = new Map()
 const layers = new Map()
 const freeIds = new Set()
 
+const selectedEntities = new Set()
+const selectionBoxStart = [undefined, undefined]
+
 const imageCache = new Map()
 
 // Make an entity AND THEN place it on the map
@@ -71,6 +74,7 @@ const makeEntity = (source, {x = 0, y = 0, z = 0, scale = 1, rotation = 0} = {})
 
 // Get an image element (make one if needed)
 const getImage = (source) => {
+	if (source === undefined) return new Image()
     const cachedImage = imageCache.get(source)
     if (cachedImage !== undefined) return cachedImage
     const image = new Image()
@@ -112,7 +116,13 @@ on.mousemove(e => {
 		const {movementX, movementY} = e
 		camera.x -= movementX / camera.scale
 		camera.y -= movementY / camera.scale
-		return
+	}
+	else if (Mouse.Right) {
+		const {movementX, movementY} = e
+		for (const entity of selectedEntities.values()) {
+			entity.x += movementX / camera.scale
+			entity.y += movementY / camera.scale
+		}
 	}
 })
 
@@ -120,14 +130,59 @@ on.mousedown(e => {
 	if (e.button === 0) {
 		const [mx, my] = Mouse.position
 		const hit = getHit(mx, my)
+		if (hit === undefined) {
+			selectionBoxStart[0] = mx
+			selectionBoxStart[1] = my
+			return
+		}
+
 		print("Entity:", hit)
+
+		if (!selectedEntities.has(hit)) {
+			if (!e.shiftKey && !e.ctrlKey) {
+				selectedEntities.clear()
+			}
+			selectedEntities.add(hit)
+		}
+		else {
+			if (selectedEntities.size === 1 || e.shiftKey || e.ctrlKey) {
+				selectedEntities.delete(hit)
+			}
+			else {
+				selectedEntities.clear()
+				selectedEntities.add(hit)
+			}
+		}
 	}
 })
+
+on.mouseup(e => {
+	if (e.button === 0) {
+		const [sx, sy] = selectionBoxStart
+		if (sx !== undefined || sy !== undefined) {
+			const [mx, my] = Mouse.position
+			const hits = getSelects([sx, sy], [mx, my])
+			
+			if (!e.shiftKey && !e.ctrlKey) {
+				selectedEntities.clear()
+			}
+
+			for (const hit of hits.values()) {
+				selectedEntities.add(hit.d)
+			}
+			
+			selectionBoxStart[0] = undefined
+			selectionBoxStart[1] = undefined
+		}
+	}
+})
+
+on.contextmenu(e => e.preventDefault())
 
 const getHits = (x, y) => {
 	const hits = new Set()
 	for (const entity of entities.values()) {
-		const space = getSpace(entity)
+		const space = getEntitySpace(entity)
 		const isCollision = isSpaceCollision([x, y], space)
 		if (isCollision) hits.add(entity)
 	}
@@ -149,24 +204,62 @@ const findTopHit = (hits) => {
 
 const updateHovers = () => {
 	const [mx, my] = Mouse.position
-	const hits = getHits(mx, my)
-	const hit = findTopHit(hits)
-	for (const entity of entities.values()) {
-		if (hit === entity) {
-			entity.highlight = true
-			entity.hover = true
+	const [sx, sy] = selectionBoxStart
+	if (sx === undefined || sy === undefined) {
+		const hits = getHits(mx, my)
+		const hit = findTopHit(hits)
+		for (const entity of entities.values()) {
+			if (hit === entity) {
+				entity.highlight = true
+				entity.hover = true
+			}
+			else if (hits.has(entity)) {
+				entity.hover = true
+				entity.highlight = false
+			}
+			else {
+				entity.hover = false
+				entity.highlight = false
+			}
 		}
-		else if (hits.has(entity)) {
-			entity.hover = true
-			entity.highlight = false
-		}
-		else {
-			entity.hover = false
-			entity.highlight = false
+		return
+	}
+	else {
+		const hits = getSelects([sx, sy], [mx, my])
+		for (const entity of entities.values()) {
+			if (hits.has(entity)) {
+				entity.hover = true
+				entity.highlight = true
+			}
+			else {
+				entity.hover = false
+				entity.highlight = false
+			}
 		}
 	}
 }
 
+const getSelects = ([sx, sy], [mx, my]) => {
+	const hits = new Set()
+	const selection = {rotation: 0, position: [sx, sy], center: [sx+(mx-sx)/2, sy+(my-sy)/2], dimensions: [mx-sx, my-sy]}
+	for (const entity of entities.values()) {
+		const space = getEntitySpace(entity)
+		if (isSpaceCollision([mx, my], space)) {
+			hits.add(entity)
+			continue
+		}
+		for (const corner of space.corners) {
+			const rcorner = rotate(corner, space.center, space.rotation)
+			if (isSpaceCollision(rcorner, selection)) {
+				hits.add(entity)
+				break
+			}
+		}
+	}
+	return hits
+}
+
+// https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
 const rotate = ([x, y], [ox, oy], radians) => {
 	const [dx, dy] = [x - ox, y - oy]
 	const d = Math.sqrt(dx**2 + dy**2)
@@ -180,35 +273,53 @@ const isSpaceCollision = ([x, y], {rotation, position, center, dimensions}) => {
 		const [rx, ry] = rotate([x, y], center, -rotation)
 		return isSpaceCollision([rx, ry], {rotation: 0, position, center, dimensions})
 	}
+
 	const [px, py] = position
 	const [width, height] = dimensions
-	if (x < px) return false
-	if (y < py) return false
-	if (x > px + width) return false
-	if (y > py + height) return false
+
+	const left = Math.min(px, px + width)
+	const right = Math.max(px, px + width)
+	const top = Math.min(py, py + height)
+	const bottom = Math.max(py, py + height)
+
+	if (x < left) return false
+	if (x > right) return false
+	if (y < top) return false
+	if (y > bottom) return false
 	return true
 }
 
 const toRadians = (degrees) => degrees * Math.PI / 180
 
+const makeSpace = ({scale = 1, x = 0, y = 0, width = 100, height = 100, rotation = 0}) => {
 
-const getSpace = (entity) => {
-	const image = entity.image
+	const w = scale * width * camera.scale
+	const h = scale * height * camera.scale
+	const dimensions = [w, h]
 
-	const width = entity.scale * image.width * camera.scale
-	const height = entity.scale * image.height * camera.scale
-	const dimensions = [width, height]
-
-	const px = canvas.width/2 + (entity.x - camera.x - (image.width * entity.scale)/2) * camera.scale
-	const py = canvas.height/2 + (entity.y - camera.y - (image.width * entity.scale)/2) * camera.scale
+	const px = canvas.width/2 + (x - camera.x - (width * scale)/2) * camera.scale
+	const py = canvas.height/2 + (y - camera.y - (height * scale)/2) * camera.scale
 	const position = [px, py]
 
-	const cx = px + width/2
-	const cy = py + height/2
+	const cx = px + w/2
+	const cy = py + h/2
 	const center = [cx, cy]
+
+	const corners = [
+		[px, py],
+		[px + w, py],
+		[px + w, py + h],
+		[px, py + h],
+	]
 	
-	const rotation = toRadians(entity.rotation)
-	return {dimensions, position, rotation, center}
+	return {dimensions, position, center, corners, rotation: toRadians(rotation)}
+}
+
+const getEntitySpace = (entity) => {
+	const image = entity.image
+	const [width, height] = [image.width, image.height]
+	const {scale, x, y, rotation} = entity
+	return makeSpace({scale, x, y, width, height, rotation})
 }
 
 stage.draw = () => {
@@ -220,7 +331,7 @@ stage.draw = () => {
 		const layer = layers.get(z)
 		for (const entity of layer.values()) {
 			const {image} = entity
-			const {dimensions, rotation, center} = getSpace(entity)
+			const {dimensions, rotation, center} = getEntitySpace(entity)
 
 			const [width, height] = dimensions
 			const [cx, cy] = center
@@ -237,7 +348,7 @@ stage.draw = () => {
 	// Hovers
 	context.lineWidth = 5 * camera.scale
 	for (const entity of entities.values()) {
-        const {dimensions, position, rotation, center} = getSpace(entity)
+        const {dimensions, position, rotation, center} = getEntitySpace(entity)
 		
 		const [width, height] = dimensions
 		const [cx, cy] = center
@@ -250,7 +361,12 @@ stage.draw = () => {
 			context.fillStyle = "rgba(0, 128, 255, 25%)"
 			context.fillRect(ox, oy, width, height)
 		}
-		if (entity.hover) {
+
+		if (selectedEntities.has(entity)) {
+			context.strokeStyle = "rgba(0, 255, 128)"
+			context.strokeRect(ox, oy, width, height)
+		}
+		else if (entity.hover) {
 			context.strokeStyle = "rgba(0, 128, 255)"
 			context.strokeRect(ox, oy, width, height)
 		}
@@ -259,6 +375,17 @@ stage.draw = () => {
 		context.translate(-(cx), -(cy))
 
     }
+
+	if (Mouse.Left) {
+		const [sx, sy] = selectionBoxStart
+		if (sx !== undefined && sy !== undefined) {
+			const [mx, my] = Mouse.position
+			context.strokeStyle = "rgba(0, 128, 255)"
+			context.strokeRect(sx, sy, mx - sx, my - sy)
+			context.fillStyle = "rgba(0, 128, 255, 25%)"
+			context.fillRect(sx, sy, mx - sx, my - sy)
+		}
+	}
 }
 
 // Save the map state to a string
