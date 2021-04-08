@@ -47,8 +47,8 @@ const loadEntity = (entity, id) => {
 }
 
 // Remove an entity from the map
-const unregisterEntity = (id) => {
-	const entity = entities.get(id)
+const unregisterEntity = (entity) => {
+	const {id} = entity
     freeIds.add(id)
     entities.delete(id)
 
@@ -98,6 +98,31 @@ on.load(() => {
 on.resize(() => {
     canvas.width = innerWidth
     canvas.height = innerHeight
+})
+
+let clipboard = []
+on.keydown(e => {
+	if (e.key === "Delete") {
+		for (const entity of selectedEntities) {
+			unregisterEntity(entity)
+		}
+		return
+	}
+	if (e.ctrlKey) {
+		if (e.key === "c") {
+			clipboard = []
+			for (const entity of selectedEntities.values())
+			clipboard.push({...entity})
+			return
+		}
+		if (e.key === "v") {
+			selectedEntities.clear()
+			for (const entity of clipboard) {
+				const paste = createEntity(entity.source, {...entity})
+				selectedEntities.add(paste)
+			}
+		}
+	}
 })
 
 on.mousewheel((e) => {
