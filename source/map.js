@@ -3,7 +3,9 @@ const {canvas, context} = stage
 
 const camera = {x: 0, y: 0, scale: 1}
 const entities = new Map()
+const layers = new Map()
 const freeIds = new Set()
+
 const imageCache = new Map()
 
 // Make an entity AND THEN place it on the map
@@ -33,24 +35,37 @@ const loadEntity = (entity, id) => {
 	entity.id = id
 	entities.set(id, entity)
 	freeIds.delete(id)
+	const {z} = entity
+	if (layers.get(z) === undefined) {
+		layers.set(z, new Map())
+	}
+	const layer = layers.get(z)
+	layer.set(id, entity)
 }
 
 // Remove an entity from the map
 const unregisterEntity = (id) => {
+	const entity = entities.get(id)
     freeIds.add(id)
     entities.delete(id)
+
+	const {z} = entity
+	const layer = layers.get(z)
+	layer.delete(id)
+	if (layer.size === 0) layer.delete(z)
 }
 
 // Remove all entities
 const unregisterAllEntities = () => {
 	freeIds.clear()
 	entities.clear()
+	layers.clear()
 }
 
 // Make an entity object
-const makeEntity = (source, {x = 0, y = 0, scale = 1} = {}) => {
+const makeEntity = (source, {x = 0, y = 0, z = 0, scale = 1} = {}) => {
     const image = getImage(source)
-    const entity = {id: undefined, source, image, x, y, scale}
+    const entity = {id: undefined, source, image, x, y, z, scale}
     return entity
 }
 
@@ -72,7 +87,7 @@ on.load(() => {
 
     createEntity("Plane.png", {scale: 0.5}).d
     createEntity("Plane.png", {x: 200, y: 200, scale: 0.5}).d
-	createEntity("Plane.png", {x: 200, scale: 0.5}).d
+	createEntity("Plane.png", {x: 200, scale: 0.5, z: -1}).d
     
 })
 
@@ -100,16 +115,51 @@ on.mousemove(e => {
 		camera.y -= movementY / camera.scale
 		return
 	}
-
-
 })
+
+on.mousedown(e => {
+	if (e.button === 0) {
+
+	}
+})
+
+const getHits = (x, y) => {
+	const hits = new Set()
+	for (const entity of entities.values()) {
+		const space = getSpace(entity)
+		const isCollision = isSpaceCollision([x, y], space)
+		if (isCollision) hits.add(entity)
+	}
+	return hits
+}
+
+const getHit = (x, y) => {
+	const hits = getHits(x, y)
+	const hit = findTopHit(hits)
+	return hit
+}
+
+const findTopHit = (hits) => {
+	return [...hits.values()].reduce((a, b) => a.z > b.z? a : b, {z: -Infinity})
+}
 
 const updateHovers = () => {
 	const [mx, my] = Mouse.position
+	const hits = getHits(mx, my)
+	const hit = findTopHit(hits)
 	for (const entity of entities.values()) {
-		const space = getSpace(entity)
-		const isCollision = isSpaceCollision([mx, my], space)
-		entity.hover = isCollision
+		if (hit === entity) {
+			entity.highlight = true
+			entity.hover = true
+		}
+		else if (hits.has(entity)) {
+			entity.hover = true
+			entity.highlight = false
+		}
+		else {
+			entity.hover = false
+			entity.highlight = false
+		}
 	}
 }
 
@@ -134,23 +184,26 @@ stage.draw = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
 	// Images
-    for (const entity of entities.values()) {
-		const {image} = entity
-        const {width, height, x, y} = getSpace(entity)
-        context.drawImage(image, x, y, width, height)
-		if (entity.hover) {
-			context.strokeStyle = "rgb(0, 128, 255)"
-			context.strokeRect(x, y, width, height)
+	const zs = [...layers.keys()].sort((a, b) => a - b)
+	for (const z of zs) {
+		const layer = layers.get(z)
+		for (const entity of layer.values()) {
+			const {image} = entity
+			const {width, height, x, y} = getSpace(entity)
+			context.drawImage(image, x, y, width, height)
 		}
-    }
+	}
 
 	// Hovers
-	context.strokeStyle = "rgb(0, 128, 255)"
-	context.lineWidth = 10 * camera.scale
-	context.lineJoin = "round"
+	context.lineWidth = 5 * camera.scale
 	for (const entity of entities.values()) {
         const {width, height, x, y} = getSpace(entity)
+		if (entity.highlight) {
+			context.fillStyle = "rgba(0, 128, 255, 25%)"
+			context.fillRect(x, y, width, height)
+		}
 		if (entity.hover) {
+			context.strokeStyle = "rgba(0, 128, 255)"
 			context.strokeRect(x, y, width, height)
 		}
     }
@@ -162,7 +215,7 @@ const save = () => {
     lines.push(`camera:x=${camera.x},y=${camera.y},scale=${camera.scale}`)
     lines.push(`entities:`)
     for (const entity of entities.values()) {
-        lines.push(`id=${entity.id},source=${entity.source},x=${entity.x},y=${entity.y},scale=${entity.scale}`)
+        lines.push(`id=${entity.id},source=${entity.source},x=${entity.x},y=${entity.y},z=${entity.z},scale=${entity.scale}`)
     }
     return lines.join(`\n`)
 }
@@ -179,9 +232,9 @@ const Load = MotherTode(`
 	)
 	Entities :: "entities:" { Entity }
 	Entity (
-		:: "\nid=" Number ",source=" String ",x=" Number ",y=" Number ",scale=" Number
-		>> ([_1, id, _2, source, _3, x, _4, y, _5, scale]) => {
-			const entity = makeEntity(source.output, {x: x.output, y: y.output, scale: scale.output})
+		:: "\nid=" Number ",source=" String ",x=" Number ",y=" Number ",z=" Number ",scale=" Number
+		>> ([_1, id, _2, source, _3, x, _4, y, _5, z, _6, scale]) => {
+			const entity = makeEntity(source.output, {x: x.output, y: y.output, z: z.output, scale: scale.output})
 			loadEntity(entity, id.output)
 		}
 	)
