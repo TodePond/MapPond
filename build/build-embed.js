@@ -119,7 +119,8 @@ on.mousemove(e => {
 on.mousedown(e => {
 	if (e.button === 0) {
 		const [mx, my] = Mouse.position
-		const hit = getHit(mx, my).d
+		const hit = getHit(mx, my)
+		print("Entity:", hit)
 	}
 })
 
@@ -166,22 +167,48 @@ const updateHovers = () => {
 	}
 }
 
-const isSpaceCollision = ([px, py], {x, y, width, height}) => {
-	if (px < x) return false
-	if (py < y) return false
-	if (px > x + width) return false
-	if (py > y + height) return false
+const rotate = ([x, y], [ox, oy], radians) => {
+	const [dx, dy] = [x - ox, y - oy]
+	const d = Math.sqrt(dx**2 + dy**2)
+	const angle = Math.atan2(dy,dx)
+	const [rx, ry] = [d * Math.cos(radians + angle), d * Math.sin(radians + angle)]
+	return [ox + rx, oy + ry]
+}
+
+const isSpaceCollision = ([x, y], {rotation, position, center, dimensions}) => {
+	if (rotation !== 0) {
+		const [rx, ry] = rotate([x, y], center, -rotation)
+		return isSpaceCollision([rx, ry], {rotation: 0, position, center, dimensions})
+	}
+	const [px, py] = position
+	const [width, height] = dimensions
+	if (x < px) return false
+	if (y < py) return false
+	if (x > px + width) return false
+	if (y > py + height) return false
 	return true
 }
 
+const toRadians = (degrees) => degrees * Math.PI / 180
+
+
 const getSpace = (entity) => {
 	const image = entity.image
+
 	const width = entity.scale * image.width * camera.scale
 	const height = entity.scale * image.height * camera.scale
-	const x = canvas.width/2 + (entity.x - camera.x - (image.width * entity.scale)/2) * camera.scale
-	const y = canvas.height/2 + (entity.y - camera.y - (image.width * entity.scale)/2) * camera.scale
-	const rotation = entity.rotation * Math.PI / 180
-	return {width, height, x, y, rotation}
+	const dimensions = [width, height]
+
+	const px = canvas.width/2 + (entity.x - camera.x - (image.width * entity.scale)/2) * camera.scale
+	const py = canvas.height/2 + (entity.y - camera.y - (image.width * entity.scale)/2) * camera.scale
+	const position = [px, py]
+
+	const cx = px + width/2
+	const cy = py + height/2
+	const center = [cx, cy]
+	
+	const rotation = toRadians(entity.rotation)
+	return {dimensions, position, rotation, center}
 }
 
 stage.draw = () => {
@@ -193,9 +220,10 @@ stage.draw = () => {
 		const layer = layers.get(z)
 		for (const entity of layer.values()) {
 			const {image} = entity
-			const {width, height, x, y, rotation} = getSpace(entity)
-			
-			const [cx, cy] = [x + width/2, y + height/2]
+			const {dimensions, rotation, center} = getSpace(entity)
+
+			const [width, height] = dimensions
+			const [cx, cy] = center
 			const [ox, oy] = [-width/2, -height/2]
 
 			context.translate(cx, cy)
@@ -209,9 +237,10 @@ stage.draw = () => {
 	// Hovers
 	context.lineWidth = 5 * camera.scale
 	for (const entity of entities.values()) {
-        const {width, height, x, y, rotation} = getSpace(entity)
+        const {dimensions, position, rotation, center} = getSpace(entity)
 		
-		const [cx, cy] = [x + width/2, y + height/2]
+		const [width, height] = dimensions
+		const [cx, cy] = center
 		const [ox, oy] = [-width/2, -height/2]
 
 		context.translate(cx, cy)
