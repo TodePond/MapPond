@@ -227,10 +227,15 @@ on.mouseup(e => {
 		const [mx, my] = Mouse.position
 		const [sx, sy] = selectionBoxStart
 		if (sx !== undefined || sy !== undefined) {
-			let hits
+			let hits = selectedEntities
 			if (sx === mx && sy === my) {
 				const hit = getHit(mx, my)
-				if (hit !== undefined) hits = new Set([hit])
+				if (hit !== undefined) {
+					if ((e.shiftKey || e.ctrlKey) && selectedEntities.has(hit)) {
+						selectedEntities.delete(hit)
+					}
+					else hits = new Set([hit])
+				}
 				else hits = new Set()
 			}
 			else {
@@ -318,11 +323,16 @@ const getSelects = ([sx, sy], [mx, my]) => {
 	const selection = {rotation: 0, position: [sx, sy], center: [sx+(mx-sx)/2, sy+(my-sy)/2], dimensions: [mx-sx, my-sy]}
 	for (const entity of entities.values()) {
 		const space = getEntitySpace(entity)
+		// TODO: replace with actual rectangle collision detection (instead of faking it with point collision detection)
 		if (isSpaceCollision([mx, my], space)) {
 			hits.add(entity)
 			continue
 		}
 		if (isSpaceCollision([sx, sy], space)) {
+			hits.add(entity)
+			continue
+		}
+		if (isSpaceCollision(selection.center, space)) {
 			hits.add(entity)
 			continue
 		}
