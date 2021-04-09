@@ -1,4 +1,4 @@
-const SAVE = "camera:x=305.2968378790902,y=-76.86563101929904,scale=0.384889864202789;entities:;id=0,source=Plane.png,x=-494.7475367166955,y=-211.73139846608927,z=0,scale=0.5133420832795047,rotation=-2.0870278483732587;id=1,source=Dot.png,x=-529.2993969266645,y=-109.95942763940137,z=-1,scale=0.23723231804219377,rotation=0;id=2,source=Dot.png,x=1442.6432436836888,y=280.579587217662,z=-1,scale=0.23723231804219377,rotation=0;id=3,source=Dot.png,x=2644.0803964236784,y=1594.6545438547314,z=-1,scale=0.23723231804219377,rotation=0;id=4,source=Dot.png,x=4459.891735433153,y=2681.525538474599,z=-1,scale=0.23723231804219377,rotation=0;id=5,source=Dot.png,x=6848.92016602977,y=1862.004351263705,z=-1,scale=0.23723231804219377,rotation=0;id=6,source=Dot.png,x=7489.63673057647,y=-556.824849776942,z=-1,scale=0.23723231804219377,rotation=0;id=7,source=Dot.png,x=10395.211848869647,y=2368.6174488122565,z=-1,scale=0.23723231804219377,rotation=0;id=8,source=Dot.png,x=12684.904377986157,y=-298.5515059286588,z=-1,scale=0.23723231804219377,rotation=0;id=9,source=Dot.png,x=16777.94821594195,y=-1467.3759915140135,z=-1,scale=0.23723231804219377,rotation=0;id=10,source=Dot.png,x=20865.150683998152,y=-95.73855308158772,z=-1,scale=0.23723231804219377,rotation=0;id=11,source=Dot.png,x=24328.88158913055,y=-1148.7127482418337,z=-1,scale=0.23723231804219377,rotation=0;routes:;id=0,start=1,end=2,length=500,type=snake,flip=false,slope=0.5"
+const SAVE = "camera:x=305.2968378790902,y=-76.86563101929904,scale=0.384889864202789;entities:;id=0,source=Plane.png,x=-494.7475367166955,y=-211.73139846608927,z=0,scale=0.5133420832795047,rotation=-2.0870278483732587;id=1,source=Dot.png,x=-529.2993969266645,y=-109.95942763940137,z=-1,scale=0.23723231804219377,rotation=0;id=2,source=Dot.png,x=1442.6432436836888,y=280.579587217662,z=-1,scale=0.23723231804219377,rotation=0;id=3,source=Dot.png,x=2644.0803964236784,y=1594.6545438547314,z=-1,scale=0.23723231804219377,rotation=0;id=4,source=Dot.png,x=4459.891735433153,y=2681.525538474599,z=-1,scale=0.23723231804219377,rotation=0;id=5,source=Dot.png,x=6848.92016602977,y=1862.004351263705,z=-1,scale=0.23723231804219377,rotation=0;id=6,source=Dot.png,x=7489.63673057647,y=-556.824849776942,z=-1,scale=0.23723231804219377,rotation=0;id=7,source=Dot.png,x=10395.211848869647,y=2368.6174488122565,z=-1,scale=0.23723231804219377,rotation=0;id=8,source=Dot.png,x=12684.904377986157,y=-298.5515059286588,z=-1,scale=0.23723231804219377,rotation=0;id=9,source=Dot.png,x=16777.94821594195,y=-1467.3759915140135,z=-1,scale=0.23723231804219377,rotation=0;id=10,source=Dot.png,x=20865.150683998152,y=-95.73855308158772,z=-1,scale=0.23723231804219377,rotation=0;id=11,source=Dot.png,x=24328.88158913055,y=-1148.7127482418337,z=-1,scale=0.23723231804219377,rotation=0;routes:;id=0,start=1,end=2,length=5000,type=snake,flip=true,slope=0.5"
 
 const stage = Stage.make()
 const {canvas, context} = stage
@@ -479,6 +479,7 @@ const animateRoute = (route, plane) => {
 	r.flying = true
 }
 
+const MAX_SPEED = 20
 stage.draw = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -511,7 +512,18 @@ stage.draw = () => {
 			previous = [x, y]
 		}
 		if (route.flying) {
-			route.flightProgress += 1
+
+			const easing = Math.min(route.flightProgress + route.length / 8, (route.length-1) - (route.flightProgress)) * MAX_SPEED
+			//if (easing < route.length) {
+				route.flightProgress += MAX_SPEED
+				let penalty = MAX_SPEED - (easing / (route.length/3))
+				penalty
+				if (penalty > MAX_SPEED - MAX_SPEED * 0.06) penalty = MAX_SPEED - MAX_SPEED * 0.06
+				route.flightProgress -= penalty
+			//}
+			/*else {
+				route.flightProgress += MAX_SPEED
+			}*/
 			if (route.flightProgress >= length) {
 				route.flying = false
 			}
