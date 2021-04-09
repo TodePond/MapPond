@@ -1,13 +1,14 @@
-const SAVE = "camera:x=305.2968378790902,y=-76.86563101929904,scale=0.384889864202789;entities:;id=0,source=Plane.png,x=-494.7475367166955,y=-211.73139846608927,z=0,scale=0.5133420832795047,rotation=-2.0870278483732587;id=1,source=Dot.png,x=-529.2993969266645,y=-109.95942763940137,z=-1,scale=0.23723231804219377,rotation=0;id=2,source=Dot.png,x=1442.6432436836888,y=280.579587217662,z=-1,scale=0.23723231804219377,rotation=0;id=3,source=Dot.png,x=2644.0803964236784,y=1594.6545438547314,z=-1,scale=0.23723231804219377,rotation=0;id=4,source=Dot.png,x=4459.891735433153,y=2681.525538474599,z=-1,scale=0.23723231804219377,rotation=0;id=5,source=Dot.png,x=6848.92016602977,y=1862.004351263705,z=-1,scale=0.23723231804219377,rotation=0;id=6,source=Dot.png,x=7489.63673057647,y=-556.824849776942,z=-1,scale=0.23723231804219377,rotation=0;id=7,source=Dot.png,x=10395.211848869647,y=2368.6174488122565,z=-1,scale=0.23723231804219377,rotation=0;id=8,source=Dot.png,x=12684.904377986157,y=-298.5515059286588,z=-1,scale=0.23723231804219377,rotation=0;id=9,source=Dot.png,x=16777.94821594195,y=-1467.3759915140135,z=-1,scale=0.23723231804219377,rotation=0;id=10,source=Dot.png,x=20865.150683998152,y=-95.73855308158772,z=-1,scale=0.23723231804219377,rotation=0;id=11,source=Dot.png,x=24328.88158913055,y=-1148.7127482418337,z=-1,scale=0.23723231804219377,rotation=0;routes:;id=0,start=1,end=2,length=50,type=snake,flip=true,slope=0.5"
+const SAVE = "camera:x=305.2968378790902,y=-76.86563101929904,scale=0.384889864202789;entities:;id=0,source=Plane.png,x=-494.7475367166955,y=-211.73139846608927,z=0,scale=0.5133420832795047,rotation=-2.0870278483732587;id=1,source=Dot.png,x=-529.2993969266645,y=-109.95942763940137,z=-1,scale=0.23723231804219377,rotation=0;id=2,source=Dot.png,x=1442.6432436836888,y=280.579587217662,z=-1,scale=0.23723231804219377,rotation=0;id=3,source=Dot.png,x=2644.0803964236784,y=1594.6545438547314,z=-1,scale=0.23723231804219377,rotation=0;id=4,source=Dot.png,x=4459.891735433153,y=2681.525538474599,z=-1,scale=0.23723231804219377,rotation=0;id=5,source=Dot.png,x=6848.92016602977,y=1862.004351263705,z=-1,scale=0.23723231804219377,rotation=0;id=6,source=Dot.png,x=7489.63673057647,y=-556.824849776942,z=-1,scale=0.23723231804219377,rotation=0;id=7,source=Dot.png,x=10395.211848869647,y=2368.6174488122565,z=-1,scale=0.23723231804219377,rotation=0;id=8,source=Dot.png,x=12684.904377986157,y=-298.5515059286588,z=-1,scale=0.23723231804219377,rotation=0;id=9,source=Dot.png,x=16777.94821594195,y=-1467.3759915140135,z=-1,scale=0.23723231804219377,rotation=0;id=10,source=Dot.png,x=20865.150683998152,y=-95.73855308158772,z=-1,scale=0.23723231804219377,rotation=0;id=11,source=Dot.png,x=24328.88158913055,y=-1148.7127482418337,z=-1,scale=0.23723231804219377,rotation=0;routes:;id=0,start=1,end=2,length=500,type=snake,flip=false,slope=0.5"
 
 const stage = Stage.make()
 const {canvas, context} = stage
 
 const camera = {x: 0, y: 0, scale: 1}
 const entities = new Map()
+const freeEntityIds = new Set()
 const layers = new Map()
-const freeIds = new Set()
 const routes = new Map()
+const freeRouteIds = new Set()
 
 const selectedEntities = new Set()
 const selectionBoxStart = [undefined, undefined]
@@ -21,10 +22,10 @@ const createEntity = (...args) => {
     return entity
 }
 
-// Get an entity id that is free to use (note: remember to remove it from the freeIds list if you use it)
+// Get an entity id that is free to use (note: remember to remove it from the freeEntityIds list if you use it)
 const getNewId = () => {
-    if (freeIds.size > 0) {
-		return freeIds.values().next().value
+    if (freeEntityIds.size > 0) {
+		return freeEntityIds.values().next().value
 	}
     else return entities.size
 }
@@ -40,7 +41,7 @@ const registerEntity = (entity) => {
 const loadEntity = (entity, id) => {
 	entity.id = id
 	entities.set(id, entity)
-	freeIds.delete(id)
+	freeEntityIds.delete(id)
 	const {z} = entity
 	if (layers.get(z) === undefined) {
 		layers.set(z, new Map())
@@ -66,7 +67,7 @@ const moveLayer = (entity, dz) => {
 // Remove an entity from the map
 const unregisterEntity = (entity) => {
 	const {id} = entity
-    freeIds.add(id)
+    freeEntityIds.add(id)
     entities.delete(id)
 
 	const {z} = entity
@@ -77,7 +78,7 @@ const unregisterEntity = (entity) => {
 
 // Remove all entities
 const unregisterAllEntities = () => {
-	freeIds.clear()
+	freeEntityIds.clear()
 	entities.clear()
 	layers.clear()
 }
@@ -415,16 +416,30 @@ const getEntitySpace = (entity) => {
 }
 
 const getRouteId = () => {
+	if (freeRouteIds.size > 0) {
+		return freeRouteIds.values().next().value
+	}
 	return routes.size
 }
 
-const createRoute = (start, end, {id = getRouteId(), length = 50, type = "snake", flip = false, slope = 0.5} = {}) => {
+const deleteRoute = (id) => {
+	freeRouteIds.add(id)
+	routes.delete(id)
+}
+
+const deleteAllRoutes = () => {
+	freeRouteIds.clear()
+	routes.clear()
+}
+
+const createRoute = (start, end, {id = getRouteId(), length = 500, type = "snake", flip = false, slope = 0.5} = {}) => {
 	const route = {start, end, length, type, flip, slope, id}
+	freeRouteIds.delete(id)
 	routes.set(id, route)
 	return route
 }
 
-const getCurve = ([ax, ay], [bx, by], {length = 50, type = "snake", flip = false, slope = 0.5} = {}) => {
+const getCurve = ([ax, ay], [bx, by], {length = 500, type = "snake", flip = false, slope = 0.5} = {}) => {
 	const [dx, dy] = [bx - ax, by - ay]
 	let [ix, iy] = [dx / length, dy / length]
 	if (flip) [ix, iy] = [iy, ix]
@@ -456,6 +471,14 @@ const getCurve = ([ax, ay], [bx, by], {length = 50, type = "snake", flip = false
 	return points
 }
 
+const animateRoute = (route, plane) => {
+	const r = routes.get(route)
+	const p = entities.get(plane)
+	p.flying = true
+	r.flightProgress = 0
+	r.flying = true
+}
+
 stage.draw = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -464,18 +487,34 @@ stage.draw = () => {
 	context.setLineDash([100 * camera.scale, 50 * camera.scale])
 	context.strokeStyle = "rgba(224, 224, 224)"
 
+	let currentFrame = undefined
+
 	for (const route of routes.values()) {
-		const {start, end, options} = route
+		const {start, end, slope, length, type, flip} = route
 		const s = entities.get(start)
 		const e = entities.get(end)
 		const [sx, sy] = getEntitySpace(s).center
 		const [ex, ey] = getEntitySpace(e).center
-		const curve = getCurve([sx, sy], [ex, ey], options)
+		const curve = getCurve([sx, sy], [ex, ey], {slope, length, type, flip})
 
 		context.beginPath()
 		context.moveTo(sx, sy)
+		let i = -1
+		let previous = [sx, sy]
 		for (const [x, y] of curve) {
+			i++
+			if (route.flying && i > route.flightProgress) {
+				currentFrame = [previous, [x, y]]
+				break
+			}
 			context.lineTo(x, y, ex, ey)
+			previous = [x, y]
+		}
+		if (route.flying) {
+			route.flightProgress += 1
+			if (route.flightProgress >= length) {
+				route.flying = false
+			}
 		}
 		context.stroke()
 	}
@@ -486,7 +525,21 @@ stage.draw = () => {
 		const layer = layers.get(z)
 		for (const entity of layer.values()) {
 			const {image} = entity
-			const {dimensions, rotation, center} = getEntitySpace(entity)
+			let {dimensions, rotation, center} = getEntitySpace(entity)
+
+			if (entity.flying) {
+				if (currentFrame === undefined) {
+					entity.flying = false
+				}
+				else {
+					const [prev, next] = currentFrame
+					const [px, py] = prev
+					const [nx, ny] = next
+					const [dx, dy] = [nx - px, ny - py]
+					rotation = Math.atan2(dy, dx)
+					center = next
+				}
+			}
 
 			const [width, height] = dimensions
 			const [cx, cy] = center
@@ -504,8 +557,17 @@ stage.draw = () => {
 	context.lineWidth = 5 * camera.scale
 	context.setLineDash([])
 	for (const entity of entities.values()) {
-        const {dimensions, rotation, center} = getEntitySpace(entity)
+        let {dimensions, rotation, center} = getEntitySpace(entity)
 		
+		if (entity.flying) {
+			const [prev, next] = currentFrame
+			const [px, py] = prev
+			const [nx, ny] = next
+			const [dx, dy] = [nx - px, ny - py]
+			rotation = Math.atan2(dy, dx)
+			center = next
+		}
+
 		const [width, height] = dimensions
 		const [cx, cy] = center
 		const [ox, oy] = [-width/2, -height/2]
