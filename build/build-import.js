@@ -1,4 +1,4 @@
-const SAVE = "camera:x=11611.593555016441,y=-1182.1625414685498,scale=0.06771486097244148;entities:;id=0,source=Plane.png,x=-510.3364117639188,y=-224.72212767210863,z=0,scale=0.5133420832795047,rotation=-2.0870278483732587;id=1,source=Dot.png,x=-529.2993969266645,y=-109.95942763940137,z=-1,scale=0.23723231804219377,rotation=0;id=2,source=Dot.png,x=1442.6432436836888,y=280.579587217662,z=-1,scale=0.23723231804219377,rotation=0;id=3,source=Dot.png,x=2644.0803964236784,y=1594.6545438547314,z=-1,scale=0.23723231804219377,rotation=0;id=4,source=Dot.png,x=4459.891735433153,y=2681.525538474599,z=-1,scale=0.23723231804219377,rotation=0;id=5,source=Dot.png,x=6848.92016602977,y=1862.004351263705,z=-1,scale=0.23723231804219377,rotation=0;id=6,source=Dot.png,x=7489.63673057647,y=-556.824849776942,z=-1,scale=0.23723231804219377,rotation=0;id=7,source=Dot.png,x=10395.211848869647,y=2368.6174488122565,z=-1,scale=0.23723231804219377,rotation=0;id=8,source=Dot.png,x=12684.904377986157,y=-298.5515059286588,z=-1,scale=0.23723231804219377,rotation=0;id=9,source=Dot.png,x=16777.94821594195,y=-1467.3759915140135,z=-1,scale=0.23723231804219377,rotation=0;id=10,source=Dot.png,x=20865.150683998152,y=-95.73855308158772,z=-1,scale=0.23723231804219377,rotation=0;id=11,source=Dot.png,x=24328.88158913055,y=-1148.7127482418337,z=-1,scale=0.23723231804219377,rotation=0"
+const SAVE = "camera:x=305.2968378790902,y=-76.86563101929904,scale=0.384889864202789;entities:;id=0,source=Plane.png,x=-494.7475367166955,y=-211.73139846608927,z=0,scale=0.5133420832795047,rotation=-2.0870278483732587;id=1,source=Dot.png,x=-529.2993969266645,y=-109.95942763940137,z=-1,scale=0.23723231804219377,rotation=0;id=2,source=Dot.png,x=1442.6432436836888,y=280.579587217662,z=-1,scale=0.23723231804219377,rotation=0;id=3,source=Dot.png,x=2644.0803964236784,y=1594.6545438547314,z=-1,scale=0.23723231804219377,rotation=0;id=4,source=Dot.png,x=4459.891735433153,y=2681.525538474599,z=-1,scale=0.23723231804219377,rotation=0;id=5,source=Dot.png,x=6848.92016602977,y=1862.004351263705,z=-1,scale=0.23723231804219377,rotation=0;id=6,source=Dot.png,x=7489.63673057647,y=-556.824849776942,z=-1,scale=0.23723231804219377,rotation=0;id=7,source=Dot.png,x=10395.211848869647,y=2368.6174488122565,z=-1,scale=0.23723231804219377,rotation=0;id=8,source=Dot.png,x=12684.904377986157,y=-298.5515059286588,z=-1,scale=0.23723231804219377,rotation=0;id=9,source=Dot.png,x=16777.94821594195,y=-1467.3759915140135,z=-1,scale=0.23723231804219377,rotation=0;id=10,source=Dot.png,x=20865.150683998152,y=-95.73855308158772,z=-1,scale=0.23723231804219377,rotation=0;id=11,source=Dot.png,x=24328.88158913055,y=-1148.7127482418337,z=-1,scale=0.23723231804219377,rotation=0;routes:;id=0,start=1,end=2,length=50,type=snake,flip=true,slope=0.5"
 
 const stage = Stage.make()
 const {canvas, context} = stage
@@ -7,6 +7,7 @@ const camera = {x: 0, y: 0, scale: 1}
 const entities = new Map()
 const layers = new Map()
 const freeIds = new Set()
+const routes = new Map()
 
 const selectedEntities = new Set()
 const selectionBoxStart = [undefined, undefined]
@@ -121,12 +122,6 @@ on.keydown(e => {
 		}
 		return
 	}
-	if (e.key === "p") {
-		for (const entity of selectedEntities.values()) {
-			print("Entity:", entity)
-		}
-		return
-	}
 	if (e.key === "=") {
 		for (const entity of selectedEntities.values()) {
 			moveLayer(entity, 1)
@@ -140,6 +135,13 @@ on.keydown(e => {
 		return
 	}
 	if (e.ctrlKey) {
+		if (e.key === "p" || e.key === "d") {
+			e.preventDefault()
+			for (const entity of selectedEntities.values()) {
+				print("Entity:", entity)
+			}
+			return
+		}
 		if (e.key === "c") {
 			clipboard = []
 			for (const entity of selectedEntities.values()) {
@@ -402,8 +404,71 @@ const getEntitySpace = (entity) => {
 	return makeSpace({scale, x, y, width, height, rotation})
 }
 
+const getRouteId = () => {
+	return routes.size
+}
+
+const createRoute = (start, end, {id = getRouteId(), length = 50, type = "snake", flip = false, slope = 0.5} = {}) => {
+	const route = {start, end, length, type, flip, slope, id}
+	routes.set(id, route)
+	return route
+}
+
+const getCurve = ([ax, ay], [bx, by], {length = 50, type = "snake", flip = false, slope = 0.5} = {}) => {
+	const [dx, dy] = [bx - ax, by - ay]
+	let [ix, iy] = [dx / length, dy / length]
+	if (flip) [ix, iy] = [iy, ix]
+	const points = []
+	const previous = [ax, ay]
+	for (const i of (0).to(length-1)) {
+		const [px, py] = previous
+		let [jx, jy] = [ix, iy]
+		if (type === "snake") {
+			const easing = Math.min(i, length-1 - (i))
+			const racing  = (length/2 - 1) - easing
+			
+			const ease = (easing * slope + racing) / (1 + slope)
+			const race = (racing * slope + easing) / (1 + slope) 
+
+			jx = ix * 2 * (race) / (length/2 - 1)
+			jy = iy * 2 * (ease) / (length/2 - 1)
+		}
+		else if (type === "single") {
+			jx = ix * ((length-1-i) * 2 / (length - 1))
+			jy = iy * (i) * 2 / (length - 1)
+		}
+		if (flip) [jx, jy] = [jy, jx]
+		const [x, y] = [px + jx, py + jy]
+		points.push([x, y])
+		previous[0] = x
+		previous[1] = y
+	}
+	return points
+}
+
 stage.draw = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
+
+	// Routes
+	context.lineWidth = 26 * camera.scale
+	context.setLineDash([100 * camera.scale, 50 * camera.scale])
+	context.strokeStyle = "rgba(224, 224, 224)"
+
+	for (const route of routes.values()) {
+		const {start, end, options} = route
+		const s = entities.get(start)
+		const e = entities.get(end)
+		const [sx, sy] = getEntitySpace(s).center
+		const [ex, ey] = getEntitySpace(e).center
+		const curve = getCurve([sx, sy], [ex, ey], options)
+
+		context.beginPath()
+		context.moveTo(sx, sy)
+		for (const [x, y] of curve) {
+			context.lineTo(x, y, ex, ey)
+		}
+		context.stroke()
+	}
 
 	// Images
 	const zs = [...layers.keys()].sort((a, b) => a - b)
@@ -427,8 +492,9 @@ stage.draw = () => {
 
 	// Hovers
 	context.lineWidth = 5 * camera.scale
+	context.setLineDash([])
 	for (const entity of entities.values()) {
-        const {dimensions, position, rotation, center} = getEntitySpace(entity)
+        const {dimensions, rotation, center} = getEntitySpace(entity)
 		
 		const [width, height] = dimensions
 		const [cx, cy] = center
@@ -476,11 +542,15 @@ const save = () => {
     for (const entity of entities.values()) {
         lines.push(`id=${entity.id},source=${entity.source},x=${entity.x},y=${entity.y},z=${entity.z},scale=${entity.scale},rotation=${entity.rotation}`)
     }
+	lines.push(`routes:`)
+    for (const route of routes.values()) {
+        lines.push(`id=${route.id},start=${route.start},end=${route.end},length=${route.length},type=${route.type},flip=${route.flip},slope=${route.slope}`)
+    }
     return lines.join(`;`)
 }
 
 const Load = MotherTode(`
-	:: Camera ";" Entities EOF
+	:: Camera ";" Entities ";" Routes EOF
 	Camera (
 		:: "camera:x=" Number ",y=" Number ",scale=" Number
 		>> ([c, x, _1, y, _2, scale]) => {
@@ -498,8 +568,17 @@ const Load = MotherTode(`
 			return true
 		}
 	)
+	Routes :: "routes:" { Route }
+	Route (
+		:: ";id=" Number ",start=" Number ",end=" Number ",length=" Number ",type=" String ",flip=" Boolean ",slope=" Number
+		?? ([_1, id, _2, start, _3, end, _4, length, _5, type, _6, flip, _7, slope]) => {
+			const route = createRoute(start.output, end.output, {id: id.output, length: length.output, type: type.output, flip: flip.output, slope: slope.output})
+			return true
+		}
+	)
 	String :: /[^,]/+
 	Number :: "-"? /[0-9.]/+ >> (n) => n.output.as(Number)
+	Boolean :: "true" | "false" >> (b) => b.output.as(Boolean)
 `)
 
 // Load a map state
@@ -507,6 +586,9 @@ const load = (save) => {
 	MotherTode.Term.resetCache()
 	unregisterAllEntities()
 	const result = Load(save)
-	if (!result.success) result.smartLog()
+	if (!result.success) {
+		result.smartLog()
+		result.log()
+	}
 	return result
 }
