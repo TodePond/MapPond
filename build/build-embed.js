@@ -1,4 +1,4 @@
-const SAVE = "camera:x=305.2968378790902,y=-76.86563101929904,scale=0.384889864202789;entities:;id=0,source=Plane.png,x=-494.7475367166955,y=-211.73139846608927,z=0,scale=0.5133420832795047,rotation=-2.0870278483732587;id=1,source=Dot.png,x=-529.2993969266645,y=-109.95942763940137,z=-1,scale=0.23723231804219377,rotation=0;id=2,source=Dot.png,x=1442.6432436836888,y=280.579587217662,z=-1,scale=0.23723231804219377,rotation=0;id=3,source=Dot.png,x=2644.0803964236784,y=1594.6545438547314,z=-1,scale=0.23723231804219377,rotation=0;id=4,source=Dot.png,x=4459.891735433153,y=2681.525538474599,z=-1,scale=0.23723231804219377,rotation=0;id=5,source=Dot.png,x=6848.92016602977,y=1862.004351263705,z=-1,scale=0.23723231804219377,rotation=0;id=6,source=Dot.png,x=7489.63673057647,y=-556.824849776942,z=-1,scale=0.23723231804219377,rotation=0;id=7,source=Dot.png,x=10395.211848869647,y=2368.6174488122565,z=-1,scale=0.23723231804219377,rotation=0;id=8,source=Dot.png,x=12684.904377986157,y=-298.5515059286588,z=-1,scale=0.23723231804219377,rotation=0;id=9,source=Dot.png,x=16777.94821594195,y=-1467.3759915140135,z=-1,scale=0.23723231804219377,rotation=0;id=10,source=Dot.png,x=20865.150683998152,y=-95.73855308158772,z=-1,scale=0.23723231804219377,rotation=0;id=11,source=Dot.png,x=24328.88158913055,y=-1148.7127482418337,z=-1,scale=0.23723231804219377,rotation=0;routes:;id=0,start=1,end=2,length=5000,type=snake,flip=true,slope=0.5"
+const SAVE = "camera:x=5381.386459697043,y=2466.0345774198,scale=0.18646730902106165;entities:;id=0,source=Plane.png,x=-505.14012008151104,y=-113.00185650034193,z=0,scale=0.7490068389192478,rotation=-2.0870278483732587;id=1,source=Dot.png,x=-529.2993969266645,y=-109.95942763940137,z=-1,scale=0.23723231804219377,rotation=0;id=2,source=Dot.png,x=1665.0490357463407,y=868.948678081306,z=-1,scale=0.23723231804219377,rotation=0;id=3,source=Dot.png,x=3665.7299804837335,y=3806.2827330548375,z=-1,scale=0.23723231804219377,rotation=0;id=4,source=Dot.png,x=7404.673870729576,y=1937.3900658981263,z=-1,scale=0.23723231804219377,rotation=0;id=5,source=Dot.png,x=11625.288530663447,y=319.15831198808615,z=-1,scale=0.23723231804219377,rotation=0;id=6,source=Dot.png,x=8982.56972500413,y=-1000.6697940662531,z=-1,scale=0.23723231804219377,rotation=0;id=7,source=Dot.png,x=10395.211848869647,y=2368.6174488122565,z=-1,scale=0.23723231804219377,rotation=0;id=8,source=Dot.png,x=12684.904377986157,y=-298.5515059286588,z=-1,scale=0.23723231804219377,rotation=0;id=9,source=Dot.png,x=16777.94821594195,y=-1467.3759915140135,z=-1,scale=0.23723231804219377,rotation=0;id=10,source=Dot.png,x=20865.150683998152,y=-95.73855308158772,z=-1,scale=0.23723231804219377,rotation=0;id=11,source=Dot.png,x=24328.88158913055,y=-1148.7127482418337,z=-1,scale=0.23723231804219377,rotation=0;id=12,source=Pond1.png,x=-594.4840674793234,y=-207.69363881424567,z=-5,scale=1.5786840794092463,rotation=118.49435449032491;id=13,source=Tree1.png,x=1566.7160883683457,y=589.9548254658055,z=-2,scale=1,rotation=-19.821886681411325;id=14,source=Tree1.png,x=1604.7882885928302,y=1183.7968180208532,z=0,scale=1,rotation=193.8908518821929;id=15,source=Tree1.png,x=2169.7669905112443,y=813.9537274665191,z=0,scale=1.2762815625000004,rotation=38.92045649847701;id=16,source=Grass.png,x=3315.147297473028,y=3932.349646276564,z=0,scale=0.5376616644748713,rotation=-0.5122141295386463;id=17,source=Grass.png,x=3500.691594383623,y=3465.1504970042747,z=0,scale=0.5403600876626365,rotation=-0.01592824771934131;id=18,source=Grass.png,x=3856.6498847352523,y=4104.024418428788,z=0,scale=0.6844921500592587,rotation=2.526193640019155;id=19,source=Grass.png,x=3962.540314433084,y=3574.9722777369307,z=0,scale=0.5927719850835456,rotation=1.9790791069477078;id=20,source=Pond2.png,x=6733.636627807247,y=2773.029863498563,z=0,scale=1.8715421002139632,rotation=0;id=23,source=Pond1.png,x=7044.404464377956,y=2595.974959647497,z=-5,scale=2.4490571565036325,rotation=111.04075932032961;id=21,source=Flower.png,x=8164.562748385401,y=2172.6458452160805,z=1,scale=0.9900374375390625,rotation=-25.042312367405717;id=22,source=Flower.png,x=7389.303208747916,y=1487.944277096928,z=1,scale=0.4357418792245978,rotation=-175.21671296022456;id=24,source=Flower.png,x=7175.518377138447,y=1581.7518429052816,z=-2,scale=0.7277684917501196,rotation=-42.977137788908315;id=25,source=Grass.png,x=8019.412524539326,y=2128.6848260076963,z=-1,scale=1.4265764604953062,rotation=0;id=26,source=Grass.png,x=7234.937543144333,y=1546.1044148567103,z=-3,scale=1.3383915334866219,rotation=0;routes:;id=0,start=1,end=2,length=5000,type=snake,flip=true,slope=0.4;id=1,start=2,end=3,length=5000,type=snake,flip=true,slope=0.2;id=2,start=3,end=4,length=5000,type=single,flip=false,slope=0.2"
 
 const stage = Stage.make()
 const {canvas, context} = stage
@@ -65,8 +65,8 @@ const moveLayer = (entity, dz) => {
 }
 
 // Remove an entity from the map
-const unregisterEntity = (entity) => {
-	const {id} = entity
+const unregisterEntity = (id) => {
+	const entity = entities.get(id)
     freeEntityIds.add(id)
     entities.delete(id)
 
@@ -104,7 +104,7 @@ const getImage = (source) => {
 on.load(() => {
     document.body.appendChild(canvas)
     document.body.style["margin"] = "0"
-    canvas.style["background-color"] = "rgb(45, 56, 77)"
+    canvas.style["background-color"] = "rgb(23, 29, 40)"
     trigger("resize")
     load(SAVE)
     
@@ -119,7 +119,7 @@ let clipboard = []
 on.keydown(e => {
 	if (e.key === "Delete") {
 		for (const entity of selectedEntities) {
-			unregisterEntity(entity)
+			unregisterEntity(entity.id)
 		}
 		return
 	}
@@ -432,14 +432,14 @@ const deleteAllRoutes = () => {
 	routes.clear()
 }
 
-const createRoute = (start, end, {id = getRouteId(), length = 500, type = "snake", flip = false, slope = 0.5} = {}) => {
+const createRoute = (start, end, {id = getRouteId(), length = 5000, type = "snake", flip = false, slope = 0.5} = {}) => {
 	const route = {start, end, length, type, flip, slope, id}
 	freeRouteIds.delete(id)
 	routes.set(id, route)
 	return route
 }
 
-const getCurve = ([ax, ay], [bx, by], {length = 500, type = "snake", flip = false, slope = 0.5} = {}) => {
+const getCurve = ([ax, ay], [bx, by], {length = 5000, type = "snake", flip = false, slope = 0.5} = {}) => {
 	const [dx, dy] = [bx - ax, by - ay]
 	let [ix, iy] = [dx / length, dy / length]
 	if (flip) [ix, iy] = [iy, ix]
@@ -459,8 +459,9 @@ const getCurve = ([ax, ay], [bx, by], {length = 500, type = "snake", flip = fals
 			jy = iy * 2 * (ease) / (length/2 - 1)
 		}
 		else if (type === "single") {
-			jx = ix * ((length-1-i) * 2 / (length - 1))
-			jy = iy * (i) * 2 / (length - 1)
+
+			jx = ix * 2 * ((length-1-i) / (length - 1))
+			jy = iy * 2 * (i) / (length - 1)
 		}
 		if (flip) [jx, jy] = [jy, jx]
 		const [x, y] = [px + jx, py + jy]
@@ -482,6 +483,29 @@ const animateRoute = (route, plane) => {
 const MAX_SPEED = 20
 stage.draw = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
+
+	// Non-Plane Images
+	const zs = [...layers.keys()].sort((a, b) => a - b)
+	for (const z of zs) {
+		const layer = layers.get(z)
+		for (const entity of layer.values()) {
+
+			if (entity.source === "Plane.png") continue
+
+			const {image} = entity
+			let {dimensions, rotation, center} = getEntitySpace(entity)
+
+			const [width, height] = dimensions
+			const [cx, cy] = center
+			const [ox, oy] = [-width/2, -height/2]
+
+			context.translate(cx, cy)
+			context.rotate(rotation)
+			context.drawImage(image, ox, oy, width, height)
+			context.rotate(-rotation)
+			context.translate(-(cx), -(cy))
+		}
+	}
 
 	// Routes
 	context.lineWidth = 26 * camera.scale
@@ -531,11 +555,13 @@ stage.draw = () => {
 		context.stroke()
 	}
 
-	// Images
-	const zs = [...layers.keys()].sort((a, b) => a - b)
+	// Plane Images
 	for (const z of zs) {
 		const layer = layers.get(z)
 		for (const entity of layer.values()) {
+
+			if (entity.source !== "Plane.png") continue
+
 			const {image} = entity
 			let {dimensions, rotation, center} = getEntitySpace(entity)
 
@@ -662,7 +688,9 @@ const Load = MotherTode(`
 	)
 	String :: /[^,]/+
 	Number :: "-"? /[0-9.]/+ >> (n) => n.output.as(Number)
-	Boolean :: "true" | "false" >> (b) => b.output.as(Boolean)
+	Boolean :: True | False
+	True :: "true" >> true
+	False :: "false" >> false
 `)
 
 // Load a map state
