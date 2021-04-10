@@ -1,4 +1,6 @@
-const SAVE = "camera:x=5381.386459697043,y=2466.0345774198,scale=0.18646730902106165;entities:;id=0,source=Plane.png,x=-505.14012008151104,y=-113.00185650034193,z=0,scale=0.7490068389192478,rotation=-2.0870278483732587;id=1,source=Dot.png,x=-529.2993969266645,y=-109.95942763940137,z=-1,scale=0.23723231804219377,rotation=0;id=2,source=Dot.png,x=1665.0490357463407,y=868.948678081306,z=-1,scale=0.23723231804219377,rotation=0;id=3,source=Dot.png,x=3665.7299804837335,y=3806.2827330548375,z=-1,scale=0.23723231804219377,rotation=0;id=4,source=Dot.png,x=7404.673870729576,y=1937.3900658981263,z=-1,scale=0.23723231804219377,rotation=0;id=5,source=Dot.png,x=11625.288530663447,y=319.15831198808615,z=-1,scale=0.23723231804219377,rotation=0;id=6,source=Dot.png,x=8982.56972500413,y=-1000.6697940662531,z=-1,scale=0.23723231804219377,rotation=0;id=7,source=Dot.png,x=10395.211848869647,y=2368.6174488122565,z=-1,scale=0.23723231804219377,rotation=0;id=8,source=Dot.png,x=12684.904377986157,y=-298.5515059286588,z=-1,scale=0.23723231804219377,rotation=0;id=9,source=Dot.png,x=16777.94821594195,y=-1467.3759915140135,z=-1,scale=0.23723231804219377,rotation=0;id=10,source=Dot.png,x=20865.150683998152,y=-95.73855308158772,z=-1,scale=0.23723231804219377,rotation=0;id=11,source=Dot.png,x=24328.88158913055,y=-1148.7127482418337,z=-1,scale=0.23723231804219377,rotation=0;id=12,source=Pond1.png,x=-594.4840674793234,y=-207.69363881424567,z=-5,scale=1.5786840794092463,rotation=118.49435449032491;id=13,source=Tree1.png,x=1566.7160883683457,y=589.9548254658055,z=-2,scale=1,rotation=-19.821886681411325;id=14,source=Tree1.png,x=1604.7882885928302,y=1183.7968180208532,z=0,scale=1,rotation=193.8908518821929;id=15,source=Tree1.png,x=2169.7669905112443,y=813.9537274665191,z=0,scale=1.2762815625000004,rotation=38.92045649847701;id=16,source=Grass.png,x=3315.147297473028,y=3932.349646276564,z=0,scale=0.5376616644748713,rotation=-0.5122141295386463;id=17,source=Grass.png,x=3500.691594383623,y=3465.1504970042747,z=0,scale=0.5403600876626365,rotation=-0.01592824771934131;id=18,source=Grass.png,x=3856.6498847352523,y=4104.024418428788,z=0,scale=0.6844921500592587,rotation=2.526193640019155;id=19,source=Grass.png,x=3962.540314433084,y=3574.9722777369307,z=0,scale=0.5927719850835456,rotation=1.9790791069477078;id=20,source=Pond2.png,x=6733.636627807247,y=2773.029863498563,z=0,scale=1.8715421002139632,rotation=0;id=23,source=Pond1.png,x=7044.404464377956,y=2595.974959647497,z=-5,scale=2.4490571565036325,rotation=111.04075932032961;id=21,source=Flower.png,x=8164.562748385401,y=2172.6458452160805,z=1,scale=0.9900374375390625,rotation=-25.042312367405717;id=22,source=Flower.png,x=7389.303208747916,y=1487.944277096928,z=1,scale=0.4357418792245978,rotation=-175.21671296022456;id=24,source=Flower.png,x=7175.518377138447,y=1581.7518429052816,z=-2,scale=0.7277684917501196,rotation=-42.977137788908315;id=25,source=Grass.png,x=8019.412524539326,y=2128.6848260076963,z=-1,scale=1.4265764604953062,rotation=0;id=26,source=Grass.png,x=7234.937543144333,y=1546.1044148567103,z=-3,scale=1.3383915334866219,rotation=0;routes:;id=0,start=1,end=2,length=5000,type=snake,flip=true,slope=0.4;id=1,start=2,end=3,length=5000,type=snake,flip=true,slope=0.2;id=2,start=3,end=4,length=5000,type=single,flip=false,slope=0.2"
+const SAVE = (
+"camera:x=18693.587538772594,y=-1858.1660729327966,scale=0.06195960211152542;entities:;id=0,source=Plane.png,x=16806.76369356051,y=-480.31166244875396,z=0,scale=0.7490068389192478,rotation=36.24797934673549;id=1,source=Dot.png,x=-1112.3802432363698,y=-199.2064959521112,z=-1,scale=0.23723231804219377,rotation=0;id=2,source=Dot.png,x=1665.0490357463407,y=868.948678081306,z=-1,scale=0.23723231804219377,rotation=0;id=3,source=Dot.png,x=3951.503817565211,y=3853.120357958002,z=-1,scale=0.23723231804219377,rotation=0;id=4,source=Dot.png,x=8443.298322196122,y=984.9797339048472,z=-1,scale=0.23723231804219377,rotation=0;id=5,source=Dot.png,x=11524.57112769105,y=-1853.7435091050681,z=-1,scale=0.23723231804219377,rotation=0;id=6,source=Dot.png,x=17079.13060912087,y=-5213.28582158229,z=-1,scale=0.23723231804219377,rotation=0;id=7,source=Dot.png,x=19100.944663096976,y=2198.4429956227204,z=-1,scale=0.23723231804219377,rotation=0;id=8,source=Dot.png,x=24627.58612111653,y=-4077.103265420348,z=-1,scale=0.23723231804219377,rotation=0;id=9,source=Dot.png,x=23064.55341878402,y=-8808.263337312366,z=-1,scale=0.23723231804219377,rotation=0;id=10,source=Dot.png,x=21427.339201146144,y=-7522.88145836834,z=-1,scale=0.23723231804219377,rotation=0;id=11,source=Dot.png,x=22537.684774767225,y=-8449.921990303892,z=-1,scale=0.23723231804219377,rotation=0;id=12,source=Pond1.png,x=-1177.564913789029,y=-308.06717943119634,z=-5,scale=1.5786840794092463,rotation=118.49435449032491;id=13,source=Tree1.png,x=1566.7160883683457,y=589.9548254658055,z=-2,scale=1,rotation=-19.821886681411325;id=14,source=Tree1.png,x=1683.9372098427204,y=1195.1038067708375,z=0,scale=1,rotation=193.8908518821929;id=15,source=Tree1.png,x=2158.303498829988,y=745.1727773789781,z=0,scale=1.2762815625000004,rotation=38.92045649847701;id=16,source=Grass.png,x=3549.33542198885,y=3979.187271179728,z=0,scale=0.5376616644748713,rotation=-0.5122141295386463;id=17,source=Grass.png,x=3734.879718899445,y=3511.988121907439,z=0,scale=0.5403600876626365,rotation=-0.01592824771934131;id=18,source=Grass.png,x=4090.8380092510743,y=4150.862043331952,z=0,scale=0.6844921500592587,rotation=2.526193640019155;id=19,source=Grass.png,x=4196.728438948907,y=3587.9765559983357,z=0,scale=0.5927719850835456,rotation=1.9790791069477078;id=20,source=Pond2.png,x=7844.286906563942,y=1926.1437304119656,z=0,scale=2.4706590755578075,rotation=57.29262194564339;id=23,source=Pond1.png,x=8303.566530204793,y=1917.2091952872597,z=-5,scale=2.4490571565036325,rotation=111.04075932032961;id=21,source=Flower.png,x=9156.910460719591,y=1178.630596067073,z=1,scale=0.9900374375390625,rotation=-25.042312367405717;id=22,source=Flower.png,x=8092.0429376626835,y=698.4667477866519,z=1,scale=0.4357418792245978,rotation=-175.21671296022456;id=24,source=Flower.png,x=7878.25810605322,y=792.2743135950054,z=-2,scale=0.7277684917501196,rotation=-42.977137788908315;id=25,source=Grass.png,x=9011.760236873515,y=1134.6695768586892,z=-1,scale=1.4265764604953062,rotation=0;id=26,source=Grass.png,x=7937.677272059106,y=756.6268855464346,z=-3,scale=1.3383915334866219,rotation=0;id=27,source=Grass2.png,x=-1511.129012208867,y=-19.35294342198506,z=0,scale=0.5949894263083894,rotation=0;id=29,source=Grass2.png,x=-961.5828566403193,y=-691.720850784766,z=0,scale=0.4144645489046406,rotation=-0.20119743305977777;id=28,source=Grass2Flip.png,x=-950.7597037937785,y=-673.2513675962815,z=0,scale=0.35848592240854177,rotation=0;id=32,source=Grass.png,x=-957.9714445934276,y=-630.781366754072,z=0,scale=0.10935880111994853,rotation=17.30812307485352;id=33,source=Grass2Flip.png,x=4264.298496718716,y=3536.7656630861857,z=0,scale=0.5688000922764596,rotation=0;id=35,source=Grass2.png,x=3635.7109245539395,y=3519.248625932222,z=0,scale=0.3131749905703722,rotation=0;id=36,source=PondPurple1.png,x=11541.866994520096,y=-1921.006812210499,z=-2,scale=2.406619233691086,rotation=-34.67264739369941;id=34,source=Grass2.png,x=4026.4375225345593,y=4078.391860973453,z=0,scale=0.39969946630107756,rotation=0;id=37,source=Grass2Flip.png,x=3678.2085997477907,y=3972.553383512607,z=0,scale=0.35848592240854177,rotation=0;id=30,source=Grass.png,x=12070.449629024135,y=-1341.5503761828793,z=0,scale=0.7565439553286544,rotation=1.9790791069477078;id=31,source=Grass2Flip.png,x=12138.019686793945,y=-1392.761269095029,z=0,scale=0.7259490705207442,rotation=0;id=38,source=Tree1.png,x=16676.750848102427,y=-5622.5515776926595,z=0,scale=1.628894626777442,rotation=38.92045649847701;id=39,source=Tree1.png,x=16839.242768167212,y=-4824.130014816445,z=0,scale=1.1576250000000001,rotation=193.8908518821929;id=40,source=Tree1.png,x=17868.37611061313,y=-5335.460417666973,z=0,scale=1.3400956406250004,rotation=193.8908518821929;id=41,source=Banana.png,x=16666.65802714222,y=-5737.568257677025,z=0,scale=0.3972143184582181,rotation=162.62724209309116;id=42,source=Banana.png,x=17871.10373182547,y=-5092.935345311344,z=0,scale=0.3972143184582181,rotation=184.83088422281057;id=43,source=Banana.png,x=16909.809037946827,y=-5963.755244472004,z=0,scale=0.3972143184582181,rotation=329.6766863000335;id=44,source=Banana.png,x=16875.880989927573,y=-4680.144094410511,z=0,scale=0.3972143184582181,rotation=361.36010372959726;id=45,source=Dino.png,x=19378.64837676652,y=3452.846466818525,z=1,scale=1.7103393581163142,rotation=0;id=46,source=Dino2.png,x=19338.254046939044,y=1.5403443135897135,z=0,scale=1.9799315994393987,rotation=0;id=47,source=Dino.png,x=19555.725393547178,y=778.6686938840918,z=0,scale=1.7103393581163142,rotation=0;id=48,source=Dino.png,x=17755.388523147794,y=1401.125590564721,z=0,scale=1.7103393581163142,rotation=0;id=49,source=Dino2.png,x=18610.458290820145,y=2903.1471088402136,z=0,scale=2.0582167275721797,rotation=0;id=50,source=Dino.png,x=20806.621137989303,y=2979.8573294527287,z=0,scale=1.7103393581163142,rotation=0;id=51,source=Dino2.png,x=21345.505357788043,y=2619.694228029591,z=-1,scale=1.9799315994393987,rotation=0;id=52,source=Dino.png,x=21997.488662875287,y=955.059308272014,z=0,scale=1.6890667454431016,rotation=0;routes:;id=0,start=1,end=2,length=5000,type=snake,flip=true,slope=0.4;id=1,start=2,end=3,length=5000,type=snake,flip=true,slope=0.1;id=2,start=3,end=4,length=5000,type=single,flip=true,slope=0.1;id=3,start=4,end=5,length=5000,type=single,flip=false,slope=0.2;id=4,start=5,end=6,length=5000,type=snake,flip=true,slope=0.3;id=5,start=6,end=7,length=5000,type=snake,flip=true,slope=0.2;id=6,start=7,end=8,length=5000,type=snake,flip=true,slope=0.2"
+)
 
 const stage = Stage.make()
 const {canvas, context} = stage
@@ -24,6 +26,7 @@ const createEntity = (...args) => {
 
 // Get an entity id that is free to use (note: remember to remove it from the freeEntityIds list if you use it)
 const getNewId = () => {
+	findFreeEntityIds()
     if (freeEntityIds.size > 0) {
 		return freeEntityIds.values().next().value
 	}
@@ -153,13 +156,30 @@ on.keydown(e => {
 		if (e.key === "v") {
 			selectedEntities.clear()
 			for (const entity of clipboard) {
+				entity.d
 				const paste = createEntity(entity.source, {...entity})
+				paste.d
 				selectedEntities.add(paste)
 			}
 			return
 		}
 	}
 })
+
+const findFreeEntityIds = () => {
+	const founds = [false].repeat(entities.size)
+	for (const entity of entities.values()) {
+		founds[entity.id] = true
+	}
+	const frees = []
+	for (const i in founds) {
+		if (!founds[i]) frees.push(i.as(Number))
+	}
+	freeEntityIds.clear()
+	for (const free of frees) {
+		freeEntityIds.add(free)
+	}
+}
 
 on.mousewheel((e) => {
 	e.preventDefault()
@@ -383,6 +403,7 @@ const isSpaceCollision = ([x, y], {rotation, position, center, dimensions}) => {
 }
 
 const toRadians = (degrees) => degrees * Math.PI / 180
+const toDegrees = (radians) => radians * 180 / Math.PI
 
 const makeSpace = ({scale = 1, x = 0, y = 0, width = 100, height = 100, rotation = 0}) => {
 
@@ -460,8 +481,14 @@ const getCurve = ([ax, ay], [bx, by], {length = 5000, type = "snake", flip = fal
 		}
 		else if (type === "single") {
 
-			jx = ix * 2 * ((length-1-i) / (length - 1))
-			jy = iy * 2 * (i) / (length - 1)
+			const easing = length-1-i
+			const racing = i
+
+			const ease = (easing * slope + racing) / (1 + slope)
+			const race = (racing * slope + easing) / (1 + slope) 
+
+			jx = ix * 2 * ease / (length - 1)
+			jy = iy * 2 * race / (length - 1)
 		}
 		if (flip) [jx, jy] = [jy, jx]
 		const [x, y] = [px + jx, py + jy]
@@ -472,15 +499,19 @@ const getCurve = ([ax, ay], [bx, by], {length = 5000, type = "snake", flip = fal
 	return points
 }
 
-const animateRoute = (route, plane) => {
+let flightDelay = 0
+const animateRoute = (route, plane = 0) => {
 	const r = routes.get(route)
 	const p = entities.get(plane)
 	p.flying = true
 	r.flightProgress = 0
 	r.flying = true
+	flightDelay = 200
 }
 
 const MAX_SPEED = 20
+let prevRoute = undefined
+let prevPlaneRot = undefined
 stage.draw = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -535,23 +566,22 @@ stage.draw = () => {
 			context.lineTo(x, y, ex, ey)
 			previous = [x, y]
 		}
-		if (route.flying) {
+		if (route.flying && flightDelay <= 0) {
 
+			prevRoute = route
 			const easing = Math.min(route.flightProgress + route.length / 8, (route.length-1) - (route.flightProgress)) * MAX_SPEED
-			//if (easing < route.length) {
-				route.flightProgress += MAX_SPEED
-				let penalty = MAX_SPEED - (easing / (route.length/3))
-				penalty
-				if (penalty > MAX_SPEED - MAX_SPEED * 0.06) penalty = MAX_SPEED - MAX_SPEED * 0.06
-				route.flightProgress -= penalty
-			//}
-			/*else {
-				route.flightProgress += MAX_SPEED
-			}*/
+			
+			route.flightProgress += MAX_SPEED
+			let penalty = MAX_SPEED - (easing / (route.length/3))
+			penalty
+			if (penalty > MAX_SPEED - MAX_SPEED * 0.06) penalty = MAX_SPEED - MAX_SPEED * 0.06
+			route.flightProgress -= penalty
+			
 			if (route.flightProgress >= length) {
 				route.flying = false
 			}
 		}
+		flightDelay--
 		context.stroke()
 	}
 
@@ -566,8 +596,14 @@ stage.draw = () => {
 			let {dimensions, rotation, center} = getEntitySpace(entity)
 
 			if (entity.flying) {
+				
 				if (currentFrame === undefined) {
+					const end = entities.get(prevRoute.end)
+					entity.x = end.x
+					entity.y = end.y
+					entity.rotation = toDegrees(prevPlaneRot)
 					entity.flying = false
+					continue
 				}
 				else {
 					const [prev, next] = currentFrame
@@ -576,6 +612,7 @@ stage.draw = () => {
 					const [dx, dy] = [nx - px, ny - py]
 					rotation = Math.atan2(dy, dx)
 					center = next
+					prevPlaneRot = rotation
 				}
 			}
 
