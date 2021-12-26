@@ -2,7 +2,7 @@
 
 # MapPond
 
-This repo is a visual I made for these videos:<br>
+This project is a visual I made for these videos:<br>
 🧳 [Tourism](https://youtu.be/nCR9zMU2Q_M)<br>
 📌 Tourism 2: Off-Road (coming soon!)
 
