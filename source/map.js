@@ -517,7 +517,7 @@ const MAX_SPEED = 2
 let prevRoute = undefined
 let prevPlaneRot = undefined
 let flameTicker = 0
-const FLAME_DURATION = 10
+const FLAME_DURATION = 100
 stage.draw = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
